@@ -50,6 +50,10 @@ Vérification au registre npm (18/10/2026). Toutes **MIT** sauf mention.
 | `@anthropic-ai/sdk` | MIT | Conditions d'utilisation de l'API Anthropic à respecter séparément. |
 | `electron-builder` | MIT | Outil de packaging. |
 
+| `lightningcss` | MPL-2.0 | Outil de build de Vite (non distribué dans l'application). Copyleft faible au niveau du fichier ; aucune modification du code tiers. |
+| `truncate-utf8-bytes` | WTFPL | Dépendance transitive de développement. Licence permissive. |
+| `jsdom`, `@testing-library/react`, `@testing-library/dom` | MIT | Tests du rendu uniquement, non distribués. |
+
 **À faire en phase 1 :** générer `THIRD_PARTY_NOTICES.md` automatiquement (script `npm run licenses`) et le mettre à jour à chaque ajout de dépendance.
 
 **Écartés pour raison de licence ou de maintenance :** `easy-mcp-use` (MIT, mais dernière publication en mai 2025 — maintenance insuffisante).
@@ -70,6 +74,7 @@ Vérification au registre npm (18/10/2026). Toutes **MIT** sauf mention.
 2. **Rétro-ingénierie.** Les conditions d'utilisation de nombreux jeux interdisent la décompilation ou l'analyse de binaires. La réglementation varie selon les pays. **La Forge n'analyse aucun binaire de jeu commercial par défaut.**
 3. **Jeux sur console.** Les jeux Switch (dont Zelda: Breath of the Wild) et PlayStation sont protégés par des mesures techniques et des conditions d'utilisation strictes. La Forge ne les traite pas à partir de fichiers ; elle travaille à partir de sources publiques et de vos descriptions.
 4. **Données personnelles.** Les sources et notes restent locales. Les envois à l'API IA contiennent uniquement les extraits nécessaires. Vérifiez la politique de conservation de votre fournisseur d'IA.
+6. **Données envoyées à un service d'IA (log du plugin Epic MCP).** Le plugin signale que les données transmises à un service LLM connecté sont de la « Licensed Technology » au sens de l'EULA Unreal (section 6e). L'utilisateur est responsable que son fournisseur ne les utilise pas comme données d'entraînement. Conséquence : la Forge n'envoie à l'API IA que les extraits nécessaires, jamais le contenu complet d'un projet Unreal.
 5. **Unreal Engine.** Les projets publiés avec Unreal sont soumis à l'EULA ; le plugin Epic MCP est expérimental et ne doit pas être livré en production (avertissement de la documentation Epic).
 
 ---

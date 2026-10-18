@@ -48,3 +48,78 @@ dt {
 dd {
   margin: 0;
 }
+
+.forge-layout {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  min-height: 100vh;
+}
+
+.forge-layout nav {
+  border-right: 1px solid color-mix(in srgb, var(--fg) 15%, transparent);
+  padding: 12px;
+}
+
+.forge-layout nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.forge-layout nav button {
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: 0;
+  padding: 6px 8px;
+  color: var(--fg);
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.forge-layout nav button[aria-current='page'] {
+  background: color-mix(in srgb, var(--fg) 12%, transparent);
+  font-weight: 600;
+}
+
+.forge-layout main {
+  padding: 16px 24px;
+  min-width: 0;
+}
+
+.demo-banner {
+  background: #fff4c2;
+  color: #5a4300;
+  border-left: 4px solid #d9a400;
+  padding: 6px 10px;
+  font-weight: 600;
+}
+
+.field {
+  display: block;
+  margin: 6px 0;
+}
+
+.field input,
+.rule select {
+  margin-left: 8px;
+}
+
+.errors {
+  color: #b00020;
+}
+
+/* Petit écran : navigation au-dessus du contenu, sans défilement horizontal */
+@media (max-width: 720px) {
+  .forge-layout {
+    grid-template-columns: 1fr;
+  }
+  .forge-layout nav ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .forge-layout nav button {
+    width: auto;
+  }
+}
