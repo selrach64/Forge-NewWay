@@ -2,6 +2,8 @@ import { useEffect, useState, type ReactElement } from 'react'
 import type { AppInfo } from '../../../shared/app-info'
 import { MechanicSchema, type Mechanic, type RuleStatus } from '../../../shared/mechanic'
 import { DEMO_MECHANICS } from '../fixtures/mechanics'
+import type { CompileResult } from '../../../shared/ipc'
+import type { UnrealOperation } from '../../../shared/unreal-operation'
 import type { PageId } from './registry'
 
 export type { PageId }
@@ -187,22 +189,101 @@ function Editor(): ReactElement {
   )
 }
 
+/** Charge le plan calculé par le cœur métier (processus principal) pour les mécaniques de démonstration. */
+function usePlan(): { result: CompileResult | null; error: string | null } {
+  const [result, setResult] = useState<CompileResult | null>(null)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    window.forge
+      .compilePlan(DEMO_MECHANICS)
+      .then(setResult)
+      .catch((err: unknown) => setError(err instanceof Error ? err.message : String(err)))
+  }, [])
+
+  return { result, error }
+}
+
 function Dependencies(): ReactElement {
+  const { result, error } = usePlan()
   return (
     <Page title="Dépendances et conflits">
       <DemoBanner />
-      <p>Le graphe de dépendances sera calculé par le moteur de fusion (phase 4).</p>
+      {error && <p role="alert">Erreur : {error}</p>}
+      {!result && !error && <p>Calcul en cours…</p>}
+      {result && (
+        <>
+          <h3>Ordre de génération</h3>
+          <ol>
+            {(result.ok ? result.plan.mechanicIds : []).map((id) => (
+              <li key={id}>{id}</li>
+            ))}
+          </ol>
+          <h3>Dépendances</h3>
+          {result.ok && result.plan.graph.edges.length === 0 && <p>Aucune dépendance.</p>}
+          <ul>
+            {(result.ok ? result.plan.graph.edges : []).map((e) => (
+              <li key={`${e.from}-${e.to}-${e.resource}`}>
+                {e.from} → {e.to} <small>({e.resource})</small>
+              </li>
+            ))}
+          </ul>
+          <h3>Conflits et manques</h3>
+          {result.ok ? (
+            <p>Aucun conflit ni dépendance manquante.</p>
+          ) : (
+            <p role="alert">{result.error}</p>
+          )}
+        </>
+      )}
     </Page>
   )
 }
 
 function MergePlan(): ReactElement {
+  const { result, error } = usePlan()
   return (
     <Page title="Plan de fusion">
       <DemoBanner />
-      <p>Aucun plan n’est généré. Le plan sera affiché ici, modifiable et approuvable.</p>
+      {error && <p role="alert">Erreur : {error}</p>}
+      {!result && !error && <p>Calcul en cours…</p>}
+      {result && !result.ok && <p role="alert">Fusion refusée : {result.error}</p>}
+      {result && result.ok && (
+        <>
+          <p>
+            Empreinte du plan : <code>{result.plan.planHash.slice(0, 16)}…</code>
+          </p>
+          <p>{result.plan.operations.length} opérations, dans l’ordre :</p>
+          <ol className="operations">
+            {result.plan.operations.map((op, index) => (
+              <li key={index}>
+                <code>{describeOperation(op)}</code>
+              </li>
+            ))}
+          </ol>
+          <p className="phase-note">
+            Le plan n’est pas encore approuvable : l’approbation arrive avec la phase 6.
+          </p>
+        </>
+      )}
     </Page>
   )
+}
+
+function describeOperation(op: UnrealOperation): string {
+  switch (op.op) {
+    case 'CreateBlueprint':
+      return `CreateBlueprint ${op.path}`
+    case 'AddVariable':
+      return `AddVariable ${op.asset.split('/').pop()}.${op.name} = ${op.defaultValue}`
+    case 'AddFunction':
+      return `AddFunction ${op.name}`
+    case 'ApplyTemplate':
+      return `ApplyTemplate ${op.templateId}`
+    case 'Compile':
+    case 'Save':
+      return `${op.op} ${op.asset}`
+  }
 }
 
 function Validation(): ReactElement {

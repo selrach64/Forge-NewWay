@@ -21,6 +21,8 @@ export const DEMO_ENDURANCE: Mechanic = {
     { key: 'RegenRate', label: 'Régénération', value: 15, unit: 'pts/s', min: 0, max: 100 },
     { key: 'RegenDelay', label: 'Délai avant régénération', value: 1, unit: 's', min: 0, max: 10 }
   ],
+  provides: ['Endurance.Current'],
+  requires: ['Inventory.TotalWeight'],
   rules: [
     {
       id: 'rule.dodge_refused',
@@ -49,4 +51,28 @@ export const DEMO_ENDURANCE: Mechanic = {
   ]
 }
 
-export const DEMO_MECHANICS: Mechanic[] = [DEMO_ENDURANCE]
+export const DEMO_WEIGHT: Mechanic = {
+  schemaVersion: MECHANIC_SCHEMA_VERSION,
+  id: 'mech.inventory.weight',
+  name: 'Poids de l’inventaire',
+  description: "Poids total de l'inventaire, qui pénalise la vitesse du personnage.",
+  category: 'inventory',
+  parameters: [
+    { key: 'WeightCapacity', label: 'Capacité de charge', value: 50, unit: 'kg', min: 1, max: 500 },
+    { key: 'SpeedPenalty', label: 'Pénalité de vitesse', value: 0.5, unit: 'ratio', min: 0, max: 1 }
+  ],
+  provides: ['Inventory.TotalWeight', 'Movement.SpeedFactor'],
+  requires: [],
+  rules: [
+    {
+      id: 'rule.speed_factor',
+      text: 'Le facteur de vitesse diminue avec le poids total, avec un plancher à 0,4.',
+      status: 'design_choice',
+      confidence: 'medium',
+      sourceIds: [],
+      editedByUser: false
+    }
+  ]
+}
+
+export const DEMO_MECHANICS: Mechanic[] = [DEMO_ENDURANCE, DEMO_WEIGHT]

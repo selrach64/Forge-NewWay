@@ -39,7 +39,11 @@ export const MechanicSchema = z
     description: z.string(),
     category: z.enum(['resource', 'movement', 'inventory', 'interaction', 'combat']),
     parameters: z.array(ParameterSchema),
-    rules: z.array(RuleSchema)
+    rules: z.array(RuleSchema),
+    /** Ressources (variables) que la mécanique possède et publie, ex. "Endurance.Current". */
+    provides: z.array(z.string().regex(/^[A-Za-z]\w*(\.\w+)+$/)).default([]),
+    /** Ressources qu'elle lit et qui doivent être produites par une autre mécanique. */
+    requires: z.array(z.string().regex(/^[A-Za-z]\w*(\.\w+)+$/)).default([])
   })
   .superRefine((mechanic, ctx) => {
     const keys = mechanic.parameters.map((p) => p.key)

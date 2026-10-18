@@ -1,9 +1,6 @@
 import { z } from 'zod'
 
-/** Canal IPC unique exposé au rendu. Toute nouvelle fonction doit être ajoutée ici. */
-export const IPC_CHANNELS = {
-  appInfo: 'app:info'
-} as const
+export { IPC_CHANNELS } from './ipc'
 
 export const APP_INFO_SCHEMA_VERSION = 'app-info.v1'
 
