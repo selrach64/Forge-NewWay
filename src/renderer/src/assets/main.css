@@ -1,0 +1,50 @@
+:root {
+  --bg: #f7f7f8;
+  --fg: #1c1c1e;
+  --muted: #5b5b63;
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --bg: #1c1c1e;
+    --fg: #f2f2f7;
+    --muted: #a1a1a8;
+  }
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    sans-serif;
+}
+
+.forge-shell {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.subtitle,
+.phase-note {
+  color: var(--muted);
+}
+
+dl {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 6px 16px;
+}
+
+dt {
+  font-weight: 600;
+}
+
+dd {
+  margin: 0;
+}
