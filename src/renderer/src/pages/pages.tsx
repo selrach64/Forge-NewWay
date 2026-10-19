@@ -2,9 +2,10 @@ import { useEffect, useState, type ReactElement } from 'react'
 import type { AppInfo } from '../../../shared/app-info'
 import { MechanicSchema, type Mechanic, type RuleStatus } from '../../../shared/mechanic'
 import { DEMO_MECHANICS } from '../fixtures/mechanics'
-import type { CompileResult } from '../../../shared/ipc'
+import type { CompileResult, ExecuteResult } from '../../../shared/ipc'
 import type { UnrealOperation } from '../../../shared/unreal-operation'
 import type { PageId } from './registry'
+import { makeRunId, suffixMechanics } from '../../../core/run'
 
 export type { PageId }
 
@@ -286,11 +287,139 @@ function describeOperation(op: UnrealOperation): string {
   }
 }
 
+/** Approbation d'un run : plan calculé avec le suffixe de run, empreinte figée. */
+interface RunApproval {
+  runId: string
+  mechanics: Mechanic[]
+  planHash: string
+  operationCount: number
+}
+
+/** Validation : approbation par empreinte, puis exécution sur la copie de test uniquement. */
 function Validation(): ReactElement {
+  const { result, error } = usePlan()
+  const [approval, setApproval] = useState<RunApproval | null>(null)
+  const [approving, setApproving] = useState(false)
+  const [confirming, setConfirming] = useState(false)
+  const [running, setRunning] = useState(false)
+  const [outcome, setOutcome] = useState<ExecuteResult | null>(null)
+  const [approvalError, setApprovalError] = useState<string | null>(null)
+
+  const currentHash = result?.ok ? result.plan.planHash : null
+  const approvalStillValid = approval !== null && currentHash !== null
+
+  // Approuve un run neuf : suffixe généré maintenant, plan recalculé avec ce suffixe.
+  const approve = (): void => {
+    setApprovalError(null)
+    setOutcome(null)
+    setConfirming(false)
+    setApproving(true)
+    const runId = makeRunId(new Date())
+    const mechanics = suffixMechanics(DEMO_MECHANICS, runId)
+    window.forge
+      .compilePlan(mechanics)
+      .then((compiled) => {
+        if (!compiled.ok) {
+          setApprovalError(compiled.error)
+          setApproval(null)
+          return
+        }
+        setApproval({
+          runId,
+          mechanics,
+          planHash: compiled.plan.planHash,
+          operationCount: compiled.plan.operations.length
+        })
+      })
+      .catch((err: unknown) => setApprovalError(err instanceof Error ? err.message : String(err)))
+      .finally(() => setApproving(false))
+  }
+
+  // Exécution en deux temps : l'approbation ne lance rien, la confirmation est un geste séparé.
+  const execute = (): void => {
+    if (!approval) return
+    setConfirming(false)
+    setRunning(true)
+    setOutcome(null)
+    const used = approval
+    setApproval(null) // approbation à usage unique
+    window.forge
+      .executePlan(used.mechanics, used.planHash)
+      .then(setOutcome)
+      .catch((err: unknown) =>
+        setOutcome({ ok: false, error: err instanceof Error ? err.message : String(err) })
+      )
+      .finally(() => setRunning(false))
+  }
+
   return (
     <Page title="Validation des modifications">
       <DemoBanner />
-      <p>Aucune modification en attente d’approbation.</p>
+      {error && <p role="alert">Erreur : {error}</p>}
+      {!result && !error && <p>Calcul en cours…</p>}
+      {result && !result.ok && <p role="alert">Fusion refusée : {result.error}</p>}
+
+      <p className="phase-note">
+        Exécution réservée à la copie de test (<code>Fayel_Forge_Clean</code>, port 8002).
+        L’original n’est jamais visé. Chaque run utilise des noms neufs.
+      </p>
+
+      {!approval && (
+        <button type="button" onClick={approve} disabled={!currentHash || approving}>
+          {approving ? 'Préparation du run…' : 'Préparer et approuver un run'}
+        </button>
+      )}
+      {approvalError && <p role="alert">Approbation refusée : {approvalError}</p>}
+
+      {approval && (
+        <>
+          <p>
+            Run <code>{approval.runId}</code> approuvé — empreinte{' '}
+            <code>{approval.planHash.slice(0, 16)}…</code> ({approval.operationCount} opérations).
+          </p>
+          {!approvalStillValid && <p role="alert">Le plan de base a changé : réapprouvez.</p>}
+          {!confirming && (
+            <button type="button" onClick={() => setConfirming(true)} disabled={running}>
+              Exécuter le run sur la copie de test…
+            </button>
+          )}
+          {confirming && (
+            <div className="confirm" role="dialog" aria-label="Confirmation d’exécution">
+              <p>
+                Confirmer : écrire {approval.operationCount} opérations sous{' '}
+                <code>/Game/Forge/…_{approval.runId}</code> dans <code>Fayel_Forge_Clean</code>. Les
+                assets existants ne sont pas écrasés.
+              </p>
+              <button type="button" onClick={execute} disabled={running}>
+                Confirmer l’exécution
+              </button>{' '}
+              <button type="button" onClick={() => setConfirming(false)}>
+                Annuler
+              </button>
+            </div>
+          )}
+        </>
+      )}
+
+      {running && <p>Exécution en cours…</p>}
+      {outcome && !outcome.ok && <p role="alert">Exécution refusée : {outcome.error}</p>}
+      {outcome && outcome.ok && (
+        <>
+          <p>
+            Résultat : <strong>{outcome.report.status === 'succeeded' ? 'réussi' : 'échec'}</strong>
+          </p>
+          <ol className="operations">
+            {outcome.report.steps.map((step) => (
+              <li key={step.index}>
+                <code>
+                  {step.status} {step.op}
+                </code>{' '}
+                {step.detail}
+              </li>
+            ))}
+          </ol>
+        </>
+      )}
     </Page>
   )
 }

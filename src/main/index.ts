@@ -10,7 +10,10 @@ import { buildMainWindowOptions, isAllowedNavigation, isTrustedSender } from './
 import { compilePlan, PlanError } from '../core/plan'
 import { MechanicSchema } from '../shared/mechanic'
 import { z } from 'zod'
-import type { CompileResult } from '../shared/ipc'
+import type { CompileResult, ExecuteResult } from '../shared/ipc'
+import { assertSandboxListener, SANDBOX_PORT } from '../unreal/sandbox'
+import { UnrealMcpClient } from '../unreal/mcp-client'
+import { executePlan } from '../unreal/executor'
 
 const devServerUrl = process.env['ELECTRON_RENDERER_URL']
 
@@ -77,6 +80,47 @@ ipcMain.handle(
       if (error instanceof PlanError) return { ok: false, error: error.message }
       throw error
     }
+  }
+)
+
+// Exécution sur la copie de test uniquement : approbation par empreinte + garde sandbox.
+ipcMain.handle(
+  IPC_CHANNELS.planExecute,
+  async (event: IpcMainInvokeEvent, payload: unknown): Promise<ExecuteResult> => {
+    if (!isTrustedSender(event.senderFrame?.url ?? '', devServerUrl)) {
+      throw new Error('Appel IPC refusé : origine non autorisée')
+    }
+    const parsed = z
+      .object({
+        mechanics: z.array(MechanicSchema).max(50),
+        approvedHash: z.string().regex(/^[0-9a-f]{64}$/)
+      })
+      .safeParse(payload)
+    if (!parsed.success) {
+      return { ok: false, error: 'Données d’exécution invalides' }
+    }
+
+    let plan
+    try {
+      plan = compilePlan(parsed.data.mechanics)
+    } catch (error) {
+      if (error instanceof PlanError) return { ok: false, error: error.message }
+      throw error
+    }
+    if (plan.planHash !== parsed.data.approvedHash) {
+      return { ok: false, error: 'Le plan a changé depuis son approbation : réapprouvez-le' }
+    }
+
+    try {
+      assertSandboxListener(SANDBOX_PORT)
+    } catch (error) {
+      return { ok: false, error: error instanceof Error ? error.message : String(error) }
+    }
+
+    const client = new UnrealMcpClient(`http://127.0.0.1:${SANDBOX_PORT}/mcp`)
+    await client.connect()
+    const report = await executePlan(plan, plan.planHash, client)
+    return { ok: true, report }
   }
 )
 
