@@ -21,7 +21,26 @@ export const DEMO_ENDURANCE: Mechanic = {
     { key: 'RegenRate', label: 'Régénération', value: 15, unit: 'pts/s', min: 0, max: 100 },
     { key: 'RegenDelay', label: 'Délai avant régénération', value: 1, unit: 's', min: 0, max: 10 }
   ],
-  provides: ['Endurance.Current'],
+  implementation: ['component.resource_pool.v1'],
+  state: [
+    {
+      key: 'CurrentEndurance',
+      label: 'Endurance courante',
+      value: 100,
+      unit: 'pts',
+      min: 0,
+      max: 1000
+    },
+    {
+      key: 'TimeSinceSpend',
+      label: 'Temps depuis la dernière dépense',
+      value: 0,
+      unit: 's',
+      min: 0,
+      max: 100000
+    }
+  ],
+  provides: [],
   requires: ['Inventory.TotalWeight'],
   rules: [
     {
@@ -61,7 +80,9 @@ export const DEMO_WEIGHT: Mechanic = {
     { key: 'WeightCapacity', label: 'Capacité de charge', value: 50, unit: 'kg', min: 1, max: 500 },
     { key: 'SpeedPenalty', label: 'Pénalité de vitesse', value: 0.5, unit: 'ratio', min: 0, max: 1 }
   ],
-  provides: ['Inventory.TotalWeight', 'Movement.SpeedFactor'],
+  implementation: [],
+  state: [],
+  provides: ['Inventory.TotalWeight'],
   requires: [],
   rules: [
     {

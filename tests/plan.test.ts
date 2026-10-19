@@ -74,3 +74,29 @@ describe('sérialisation canonique', () => {
     expect(hashOf({ b: 1, a: 2 })).toBe(hashOf({ a: 2, b: 1 }))
   })
 })
+
+describe('modèle component.resource_pool.v1 dans le plan', () => {
+  it("ajoute ApplyTemplate après les variables de l'endurance", () => {
+    const plan = compilePlan([DEMO_ENDURANCE, DEMO_WEIGHT])
+    const kinds = plan.operations
+      .filter((op) => op.asset === '/Game/Forge/Endurance/BP_AC_Endurance')
+      .map((op) => op.op)
+    expect(kinds.indexOf('ApplyTemplate')).toBeGreaterThan(kinds.indexOf('AddVariable'))
+    expect(kinds.indexOf('ApplyTemplate')).toBeLessThan(kinds.indexOf('Compile'))
+  })
+
+  it('refuse un modèle sans les variables requises', () => {
+    const incomplete = { ...DEMO_ENDURANCE, state: [] }
+    expect(() => compilePlan([incomplete, DEMO_WEIGHT])).toThrow(/variables manquantes/)
+  })
+})
+
+describe("variables d'état", () => {
+  it("sont modifiables dans l'éditeur", () => {
+    const plan = compilePlan([DEMO_ENDURANCE, DEMO_WEIGHT])
+    const current = plan.operations.find(
+      (op) => op.op === 'AddVariable' && op.name === 'CurrentEndurance'
+    )
+    expect(current && current.op === 'AddVariable' && current.editable).toBe(true)
+  })
+})

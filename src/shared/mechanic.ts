@@ -40,6 +40,10 @@ export const MechanicSchema = z
     category: z.enum(['resource', 'movement', 'inventory', 'interaction', 'combat']),
     parameters: z.array(ParameterSchema),
     rules: z.array(RuleSchema),
+    /** Modèles d'implémentation appliqués à la génération, ex. component.resource_pool.v1. */
+    implementation: z.array(z.string()).default([]),
+    /** Variables d'état internes, initialisées à la génération (ex. endurance courante). */
+    state: z.array(ParameterSchema).default([]),
     /** Ressources (variables) que la mécanique possède et publie, ex. "Endurance.Current". */
     provides: z.array(z.string().regex(/^[A-Za-z]\w*(\.\w+)+$/)).default([]),
     /** Ressources qu'elle lit et qui doivent être produites par une autre mécanique. */

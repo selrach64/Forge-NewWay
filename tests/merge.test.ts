@@ -3,10 +3,19 @@ import { buildMergeGraph, isMergeable } from '../src/core/merge'
 import { DEMO_ENDURANCE, DEMO_WEIGHT } from '../src/renderer/src/fixtures/mechanics'
 import type { Mechanic } from '../src/shared/mechanic'
 
-const movement: Mechanic = {
+const speed: Mechanic = {
   ...DEMO_WEIGHT,
   id: 'mech.movement.speed',
   name: 'Vitesse',
+  category: 'movement',
+  provides: ['Movement.SpeedFactor'],
+  requires: ['Inventory.TotalWeight']
+}
+
+const movement: Mechanic = {
+  ...DEMO_WEIGHT,
+  id: 'mech.movement.max',
+  name: 'Vitesse max',
   category: 'movement',
   provides: ['Movement.MaxSpeed'],
   requires: ['Movement.SpeedFactor']
@@ -27,8 +36,12 @@ describe('moteur de fusion', () => {
   })
 
   it("chaîne les dépendances jusqu'au mouvement", () => {
-    const graph = buildMergeGraph([movement, DEMO_WEIGHT])
-    expect(graph.order).toEqual(['mech.inventory.weight', 'mech.movement.speed'])
+    const graph = buildMergeGraph([movement, speed, DEMO_WEIGHT])
+    expect(graph.order).toEqual([
+      'mech.inventory.weight',
+      'mech.movement.speed',
+      'mech.movement.max'
+    ])
   })
 
   it('signale deux propriétaires pour une même ressource', () => {

@@ -1,0 +1,102 @@
+{
+  "planHash": "3b7e4a0fd053b70eaafaaf3d237688f6102afbf13d65c2758de136e5dc28e098",
+  "status": "failed",
+  "steps": [
+    {
+      "index": 0,
+      "op": "CreateBlueprint",
+      "status": "ok",
+      "detail": "créé /Game/Forge/Inventory_v4/BP_AC_Inventory_v4"
+    },
+    {
+      "index": 1,
+      "op": "AddVariable",
+      "asset": "/Game/Forge/Inventory_v4/BP_AC_Inventory_v4",
+      "status": "ok",
+      "detail": "WeightCapacity ajouté"
+    },
+    {
+      "index": 2,
+      "op": "AddVariable",
+      "asset": "/Game/Forge/Inventory_v4/BP_AC_Inventory_v4",
+      "status": "ok",
+      "detail": "SpeedPenalty ajouté"
+    },
+    {
+      "index": 3,
+      "op": "AddVariable",
+      "asset": "/Game/Forge/Inventory_v4/BP_AC_Inventory_v4",
+      "status": "ok",
+      "detail": "Inventory_TotalWeight ajouté"
+    },
+    {
+      "index": 4,
+      "op": "Compile",
+      "asset": "/Game/Forge/Inventory_v4/BP_AC_Inventory_v4",
+      "status": "ok",
+      "detail": "compilé, 3 valeurs relues"
+    },
+    {
+      "index": 5,
+      "op": "Save",
+      "asset": "/Game/Forge/Inventory_v4/BP_AC_Inventory_v4",
+      "status": "ok",
+      "detail": "sauvegardé /Game/Forge/Inventory_v4/BP_AC_Inventory_v4"
+    },
+    {
+      "index": 6,
+      "op": "CreateBlueprint",
+      "status": "ok",
+      "detail": "créé /Game/Forge/Endurance_v4/BP_AC_Endurance_v4"
+    },
+    {
+      "index": 7,
+      "op": "AddVariable",
+      "asset": "/Game/Forge/Endurance_v4/BP_AC_Endurance_v4",
+      "status": "ok",
+      "detail": "MaxEndurance ajouté"
+    },
+    {
+      "index": 8,
+      "op": "AddVariable",
+      "asset": "/Game/Forge/Endurance_v4/BP_AC_Endurance_v4",
+      "status": "ok",
+      "detail": "DodgeCost ajouté"
+    },
+    {
+      "index": 9,
+      "op": "AddVariable",
+      "asset": "/Game/Forge/Endurance_v4/BP_AC_Endurance_v4",
+      "status": "ok",
+      "detail": "RegenRate ajouté"
+    },
+    {
+      "index": 10,
+      "op": "AddVariable",
+      "asset": "/Game/Forge/Endurance_v4/BP_AC_Endurance_v4",
+      "status": "ok",
+      "detail": "RegenDelay ajouté"
+    },
+    {
+      "index": 11,
+      "op": "AddVariable",
+      "asset": "/Game/Forge/Endurance_v4/BP_AC_Endurance_v4",
+      "status": "ok",
+      "detail": "CurrentEndurance ajouté"
+    },
+    {
+      "index": 12,
+      "op": "AddVariable",
+      "asset": "/Game/Forge/Endurance_v4/BP_AC_Endurance_v4",
+      "status": "ok",
+      "detail": "TimeSinceSpend ajouté"
+    },
+    {
+      "index": 13,
+      "op": "ApplyTemplate",
+      "asset": "/Game/Forge/Endurance_v4/BP_AC_Endurance_v4",
+      "status": "failed",
+      "detail": "appel Unreal : editor_toolset.toolsets.blueprint.BlueprintTools.write_graph_dsl : AssertionError: The node could not be created / Default|CallOnEnduranceChanged_Endurance_v4 does not exist\n  in: (Default|CallOnEnduranceChanged_Endurance_v4 :self self :Current newCur :Max ...\n  in: (fn TryDodge)"
+    }
+  ]
+}

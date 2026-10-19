@@ -1,0 +1,109 @@
+{
+  "planHash": "c86ba267fad64e9ef05a60f6fe06348fe7b3e4fbef0f4a8b3d5b11a0ed90b710",
+  "status": "succeeded",
+  "steps": [
+    {
+      "index": 0,
+      "op": "CreateBlueprint",
+      "status": "ok",
+      "detail": "créé /Game/Forge/Inventory/BP_AC_Inventory"
+    },
+    {
+      "index": 1,
+      "op": "AddVariable",
+      "asset": "/Game/Forge/Inventory/BP_AC_Inventory",
+      "status": "ok",
+      "detail": "WeightCapacity ajouté"
+    },
+    {
+      "index": 2,
+      "op": "AddVariable",
+      "asset": "/Game/Forge/Inventory/BP_AC_Inventory",
+      "status": "ok",
+      "detail": "SpeedPenalty ajouté"
+    },
+    {
+      "index": 3,
+      "op": "AddVariable",
+      "asset": "/Game/Forge/Inventory/BP_AC_Inventory",
+      "status": "ok",
+      "detail": "Inventory_TotalWeight ajouté"
+    },
+    {
+      "index": 4,
+      "op": "Compile",
+      "asset": "/Game/Forge/Inventory/BP_AC_Inventory",
+      "status": "ok",
+      "detail": "compilé, 3 valeurs relues"
+    },
+    {
+      "index": 5,
+      "op": "Save",
+      "asset": "/Game/Forge/Inventory/BP_AC_Inventory",
+      "status": "ok",
+      "detail": "sauvegardé /Game/Forge/Inventory/BP_AC_Inventory"
+    },
+    {
+      "index": 6,
+      "op": "CreateBlueprint",
+      "status": "ok",
+      "detail": "créé /Game/Forge/Endurance/BP_AC_Endurance"
+    },
+    {
+      "index": 7,
+      "op": "AddVariable",
+      "asset": "/Game/Forge/Endurance/BP_AC_Endurance",
+      "status": "ok",
+      "detail": "MaxEndurance ajouté"
+    },
+    {
+      "index": 8,
+      "op": "AddVariable",
+      "asset": "/Game/Forge/Endurance/BP_AC_Endurance",
+      "status": "ok",
+      "detail": "DodgeCost ajouté"
+    },
+    {
+      "index": 9,
+      "op": "AddVariable",
+      "asset": "/Game/Forge/Endurance/BP_AC_Endurance",
+      "status": "ok",
+      "detail": "RegenRate ajouté"
+    },
+    {
+      "index": 10,
+      "op": "AddVariable",
+      "asset": "/Game/Forge/Endurance/BP_AC_Endurance",
+      "status": "ok",
+      "detail": "RegenDelay ajouté"
+    },
+    {
+      "index": 11,
+      "op": "AddVariable",
+      "asset": "/Game/Forge/Endurance/BP_AC_Endurance",
+      "status": "ok",
+      "detail": "CurrentEndurance ajouté"
+    },
+    {
+      "index": 12,
+      "op": "AddVariable",
+      "asset": "/Game/Forge/Endurance/BP_AC_Endurance",
+      "status": "ok",
+      "detail": "TimeSinceSpend ajouté"
+    },
+    {
+      "index": 13,
+      "op": "Compile",
+      "asset": "/Game/Forge/Endurance/BP_AC_Endurance",
+      "status": "ok",
+      "detail": "compilé, 6 valeurs relues"
+    },
+    {
+      "index": 14,
+      "op": "Save",
+      "asset": "/Game/Forge/Endurance/BP_AC_Endurance",
+      "status": "ok",
+      "detail": "sauvegardé /Game/Forge/Endurance/BP_AC_Endurance"
+    }
+  ]
+}

@@ -2,6 +2,10 @@ import { createHash } from 'node:crypto'
 import { UnrealOperationSchema, type UnrealOperation } from '../shared/unreal-operation'
 import type { Mechanic } from '../shared/mechanic'
 import { buildMergeGraph, isMergeable, type MergeGraph } from './merge'
+import {
+  RESOURCE_POOL_REQUIRED_VARIABLES,
+  RESOURCE_POOL_TEMPLATE_ID
+} from './templates/resource-pool'
 
 export const MERGE_PLAN_SCHEMA_VERSION = 'merge-plan.v1'
 
@@ -89,6 +93,17 @@ export function compilePlan(mechanics: Mechanic[]): MergePlan {
         editable: true
       })
     }
+    for (const v of mechanic.state) {
+      // Modifiable dans l'éditeur : permet de tester un état précis (ex. endurance à 50).
+      operations.push({
+        op: 'AddVariable',
+        asset,
+        name: v.key,
+        type: 'float',
+        defaultValue: v.value,
+        editable: true
+      })
+    }
     for (const resource of mechanic.provides) {
       operations.push({
         op: 'AddVariable',
@@ -98,6 +113,20 @@ export function compilePlan(mechanics: Mechanic[]): MergePlan {
         defaultValue: 0,
         editable: false
       })
+    }
+    for (const templateId of mechanic.implementation) {
+      if (templateId !== RESOURCE_POOL_TEMPLATE_ID) {
+        throw new PlanError(`Modèle inconnu : ${templateId}`, graph)
+      }
+      const declared = new Set([...mechanic.parameters, ...mechanic.state].map((v) => v.key))
+      const missing = RESOURCE_POOL_REQUIRED_VARIABLES.filter((name) => !declared.has(name))
+      if (missing.length > 0) {
+        throw new PlanError(
+          `${mechanic.id} : variables manquantes pour ${templateId} : ${missing.join(', ')}`,
+          graph
+        )
+      }
+      operations.push({ op: 'ApplyTemplate', asset, templateId, params: {} })
     }
     operations.push({ op: 'Compile', asset })
     operations.push({ op: 'Save', asset })
