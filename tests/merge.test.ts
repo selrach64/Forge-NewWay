@@ -5,7 +5,7 @@ import type { Mechanic } from '../src/shared/mechanic'
 
 const speed: Mechanic = {
   ...DEMO_WEIGHT,
-  id: 'mech.movement.speed',
+  id: 'mech.speed.factor',
   name: 'Vitesse',
   category: 'movement',
   provides: ['Movement.SpeedFactor'],
@@ -37,11 +37,7 @@ describe('moteur de fusion', () => {
 
   it("chaîne les dépendances jusqu'au mouvement", () => {
     const graph = buildMergeGraph([movement, speed, DEMO_WEIGHT])
-    expect(graph.order).toEqual([
-      'mech.inventory.weight',
-      'mech.movement.speed',
-      'mech.movement.max'
-    ])
+    expect(graph.order).toEqual(['mech.inventory.weight', 'mech.speed.factor', 'mech.movement.max'])
   })
 
   it('signale deux propriétaires pour une même ressource', () => {

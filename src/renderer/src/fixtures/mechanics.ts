@@ -82,12 +82,46 @@ export const DEMO_WEIGHT: Mechanic = {
   ],
   implementation: [],
   state: [],
-  provides: ['Inventory.TotalWeight'],
+  provides: ['Inventory.TotalWeight', 'Inventory.WeightCapacity'],
   requires: [],
   rules: [
     {
       id: 'rule.speed_factor',
       text: 'Le facteur de vitesse diminue avec le poids total, avec un plancher à 0,4.',
+      status: 'design_choice',
+      confidence: 'medium',
+      sourceIds: [],
+      editedByUser: false
+    }
+  ]
+}
+
+/** Vitesse : facteur de vitesse calculé à partir du poids total de l'inventaire (étape 2 de la mission). */
+export const DEMO_SPEED: Mechanic = {
+  schemaVersion: MECHANIC_SCHEMA_VERSION,
+  id: 'mech.speed.factor',
+  name: 'Vitesse selon la charge',
+  description: "Facteur de vitesse du personnage, réduit par le poids total de l'inventaire.",
+  category: 'movement',
+  parameters: [
+    {
+      key: 'SpeedPenalty',
+      label: 'Pénalité de vitesse',
+      value: 0.5,
+      unit: 'ratio',
+      min: 0,
+      max: 1
+    },
+    { key: 'SpeedFloor', label: 'Plancher du facteur', value: 0.4, unit: 'ratio', min: 0, max: 1 }
+  ],
+  implementation: [],
+  state: [],
+  provides: ['Movement.SpeedFactor'],
+  requires: ['Inventory.TotalWeight', 'Inventory.WeightCapacity'],
+  rules: [
+    {
+      id: 'rule.speed_factor_formula',
+      text: 'SpeedFactor = clamp(1 - (TotalWeight / WeightCapacity) * SpeedPenalty, SpeedFloor, 1).',
       status: 'design_choice',
       confidence: 'medium',
       sourceIds: [],

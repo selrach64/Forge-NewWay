@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 // Remplace le graphe EventGraph d'un Blueprint de test par le contenu d'un fichier DSL.
 // Usage : node scripts/tick-swap.mjs <endpoint> <blueprint-asset-path> <fichier.dsl>
 import { readFileSync } from 'node:fs'
@@ -11,15 +12,39 @@ async function call(toolset, tool, args) {
   if (!sid) {
     const init = await fetch(endpoint, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', Accept: 'application/json, text/event-stream' },
-      body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'initialize', params: { protocolVersion: '2025-11-25', capabilities: {}, clientInfo: { name: 'tick-swap', version: '0' } } })
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json, text/event-stream'
+      },
+      body: JSON.stringify({
+        jsonrpc: '2.0',
+        id: 1,
+        method: 'initialize',
+        params: {
+          protocolVersion: '2025-11-25',
+          capabilities: {},
+          clientInfo: { name: 'tick-swap', version: '0' }
+        }
+      })
     })
     sid = init.headers.get('mcp-session-id')
   }
   const r = await fetch(endpoint, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', Accept: 'application/json, text/event-stream', 'Mcp-Session-Id': sid },
-    body: JSON.stringify({ jsonrpc: '2.0', id: 2, method: 'tools/call', params: { name: 'call_tool', arguments: { toolset_name: toolset, tool_name: tool, arguments: args } } })
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json, text/event-stream',
+      'Mcp-Session-Id': sid
+    },
+    body: JSON.stringify({
+      jsonrpc: '2.0',
+      id: 2,
+      method: 'tools/call',
+      params: {
+        name: 'call_tool',
+        arguments: { toolset_name: toolset, tool_name: tool, arguments: args }
+      }
+    })
   })
   const j = await r.json()
   if (!j.result) throw new Error(JSON.stringify(j.error))
@@ -33,7 +58,9 @@ const bp = { refPath: `${assetPath}.${name}` }
 const graph = { refPath: `${assetPath}.${name}:EventGraph` }
 
 // 1. Vider le graphe (write_graph_dsl ne supprime pas les nœuds existants).
-const found = JSON.parse(await call(BLUEPRINT, 'find_nodes', { graph, title: '', entry_points_only: false }))
+const found = JSON.parse(
+  await call(BLUEPRINT, 'find_nodes', { graph, title: '', entry_points_only: false })
+)
 const refs = found.returnValue.map((r) => r.refPath)
 let deleted = 0
 for (const ref of refs) {

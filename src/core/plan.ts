@@ -105,6 +105,10 @@ export function compilePlan(mechanics: Mechanic[]): MergePlan {
       })
     }
     for (const resource of mechanic.provides) {
+      // Une ressource qui correspond à un paramètre déjà déclaré (ex. Inventory.WeightCapacity)
+      // est publiée par ce paramètre : pas de variable en double.
+      const key = resource.split('.').pop() ?? resource
+      if (mechanic.parameters.some((p) => p.key === key)) continue
       operations.push({
         op: 'AddVariable',
         asset,
